@@ -1,21 +1,13 @@
-# hook up reddit api
-# constantly crawl chosen subreddits
-# when a new post is created, send an email to 8644514161@txt.att.net
-# (this will send a text to me)
-# subject should be [H], message should have [W]
-# link to post should be included
 # have all this run on the cloud
-
-# nice to haves
-# exlude messages that where [H] is paypal
 
 import sys
 import time
 
-from helper_functions import process_hardwareswap, process_submission
 import praw
-import local_settings
 
+import local_settings
+from helper_functions import (process_hardwareswap_submission,
+                              process_submission)
 
 if __name__ == "__main__":
 
@@ -36,9 +28,8 @@ if __name__ == "__main__":
             link = "https://reddit.com{0}".format(submission.permalink)
 
             if not seen_posts or submission.id not in seen_posts:
-                
                 if sub == "hardwareswap":
-                    process_hardwareswap(sub, submission, link)
+                    process_hardwareswap_submission(sub, submission, link)
                     seen_posts.append(submission.id)
 
                 else:

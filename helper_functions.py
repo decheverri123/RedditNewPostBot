@@ -38,7 +38,7 @@ def has_paypal(title):
     return False
 
 
-def process_hardwareswap(sub, submission, link):
+def process_hardwareswap_submission(sub, submission, link):
     """if a submission from hardwareswap has paypal/cash in [H],ignore it else,
         send notificaiton
     Arguments:
@@ -47,9 +47,7 @@ def process_hardwareswap(sub, submission, link):
         link {link} -- full link to submission
     """
     if has_paypal(submission.title):
-        print(
-            "Has Paypal/Cash, ignoring. {0}\n".
-            format(submission.title))
+        print("Has Paypal/Cash, ignoring. {0}\n".format(submission.title))
 
     else:
         send_email(submission.id, submission.title, link)
