@@ -45,7 +45,7 @@ if __name__ == "__main__":
                 seen_posts.append(submission.id)
 
             elif submission.id in seen_posts:
-                print("{0} already seen".format(submission.title))
+                print("Already seen: {0}".format(submission.title))
 
     while True:
         try:
