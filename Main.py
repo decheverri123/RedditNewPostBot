@@ -31,13 +31,14 @@ if __name__ == "__main__":
     first = True
 
     def check_new_posts(sub):
-
         for submission in reddit.subreddit(sub).new(limit=1):
+
             link = "https://reddit.com{0}".format(submission.permalink)
 
             if first is True:
                 seen_posts.append(submission.id)
                 print("{0} already seen".format(submission.title))
+
             if submission.id not in seen_posts:
                 send_email(submission.id, submission.title, link)
                 print("New notification from {0}. {1}".format(
@@ -46,7 +47,6 @@ if __name__ == "__main__":
             seen_posts.append(submission.id)
 
     while True:
-
         try:
             for sub in subreddits:
                 check_new_posts(sub)

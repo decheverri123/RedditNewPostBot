@@ -7,7 +7,6 @@ import local_settings
 
 
 def send_email(id, title, link):
-
     port = 465
     context = ssl.create_default_context()
 
