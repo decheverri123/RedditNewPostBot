@@ -12,7 +12,7 @@
 import sys
 import time
 
-from helper_functions import send_email
+from helper_functions import process_hardwareswap, process_submission
 import praw
 import local_settings
 
@@ -36,13 +36,14 @@ if __name__ == "__main__":
             link = "https://reddit.com{0}".format(submission.permalink)
 
             if not seen_posts or submission.id not in seen_posts:
-                send_email(submission.id, submission.title, link)
-                print("New notification from {0}. {1} \n{2}\n".format(
-                    sub, submission.title, link))
-                seen_posts.append(submission.id)
+                
+                if sub == "hardwareswap":
+                    process_hardwareswap(sub, submission, link)
+                    seen_posts.append(submission.id)
 
-            else:
-                print("Already seen: {0}\n".format(submission.title))
+                else:
+                    process_submission(sub, submission, link)
+                    seen_posts.append(submission.id)
 
     while True:
         try:
