@@ -37,14 +37,15 @@ if __name__ == "__main__":
 
             if first is True:
                 seen_posts.append(submission.id)
-                print("{0} already seen".format(submission.title))
 
             if submission.id not in seen_posts:
                 send_email(submission.id, submission.title, link)
                 print("New notification from {0}. {1}".format(
                     sub, submission.title))
+                seen_posts.append(submission.id)
 
-            seen_posts.append(submission.id)
+            elif submission.id in seen_posts:
+                print("{0} already seen".format(submission.title))
 
     while True:
         try:
