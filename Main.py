@@ -9,11 +9,11 @@
 # nice to haves
 # exlude messages that where [H] is paypal
 
-from HelperFunctions import send_email
-import praw
-from praw import reddit
-import time
 import sys
+import time
+
+from helper_functions import send_email
+import praw
 import local_settings
 
 
@@ -22,30 +22,28 @@ if __name__ == "__main__":
     subreddits = ["GameDeals", "buildapcsales", "hardwareswap", "consoledeals"]
 
     reddit = praw.Reddit(client_id=local_settings.client_id,
-                        client_secret=local_settings.client_secret,
-                        password=local_settings.password,
-                        username="decheverri123",
-                        user_agent="test script")
+                         client_secret=local_settings.client_secret,
+                         password=local_settings.password,
+                         username="decheverri123",
+                         user_agent="test script")
 
     seen_posts = []
     first = True
 
-
-    def check_new_posts(sub): 
+    def check_new_posts(sub):
 
         for submission in reddit.subreddit(sub).new(limit=1):
             link = "https://reddit.com{0}".format(submission.permalink)
-        
+
             if first is True:
                 seen_posts.append(submission.id)
                 print("{0} already seen".format(submission.title))
-        
             if submission.id not in seen_posts:
                 send_email(submission.id, submission.title, link)
-                print("New notification from {0}. {1}".format(sub, submission.title))
-        
+                print("New notification from {0}. {1}".format(
+                    sub, submission.title))
+
             seen_posts.append(submission.id)
-    
 
     while True:
 
@@ -62,4 +60,3 @@ if __name__ == "__main__":
         except Exception as e:
             print('Error:', e)
             time.sleep(5)
-
