@@ -9,7 +9,7 @@
 # nice to haves
 # exlude messages that where [H] is paypal
 
-from HelperFunctions import send_email
+from helper_functions import send_email
 import praw
 from praw import reddit
 import time
