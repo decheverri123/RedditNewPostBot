@@ -36,19 +36,19 @@ if __name__ == "__main__":
             link = "https://reddit.com{0}".format(submission.permalink)
 
             if first is True:
-                print("New notification from {0}. {1} \n{2}".format(
+                print("New notification from {0}. {1} \n{2}\n".format(
                     sub, submission.title, link))
                 seen_posts.append(submission.id)
                 send_email(submission.id, submission.title, link)
 
             elif submission.id not in seen_posts:
                 send_email(submission.id, submission.title, link)
-                print("New notification from {0}. {1} \n{2}".format(
+                print("New notification from {0}. {1} \n{2}\n".format(
                     sub, submission.title, link))
                 seen_posts.append(submission.id)
 
             else:
-                print("Already seen: {0}".format(submission.title))
+                print("Already seen: {0}\n".format(submission.title))
 
     while True:
         try:
