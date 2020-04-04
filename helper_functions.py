@@ -3,7 +3,57 @@ import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import praw
+
 import local_settings
+
+
+seen_posts = []
+
+
+def get_new_posts(sub):
+    reddit = setup_reddit_api()
+
+    for submission in reddit.subreddit(sub).new(limit=1):
+
+        if not seen_posts or submission.id not in seen_posts:
+            if sub == "hardwareswap":
+                process_hardwareswap_submission(sub, submission)
+                seen_posts.append(submission.id)
+
+            else:
+                process_submission(sub, submission)
+                seen_posts.append(submission.id)
+
+
+def process_hardwareswap_submission(sub, submission):
+    """ if a submission from hardwareswap has paypal/cash in [H],ignore it else,
+        send notificaiton
+    Arguments:
+        sub {} -- subreddit
+        submission {submission} -- submission
+        link {link} -- full link to submission
+    """
+
+    link = "https://reddit.com{0}".format(submission.permalink)
+
+    if has_paypal(submission.title):
+        print("Has Paypal/Cash, ignoring. {0}".format(submission.title))
+        print(str(link)+"\n")
+
+    else:
+        send_email(submission.id, submission.title, link)
+        print("New notification from {0}. {1} \n{2}\n".format(
+            sub, submission.title, link))
+
+
+def process_submission(sub, submission):
+
+    link = "https://reddit.com{0}".format(submission.permalink)
+
+    send_email(submission.id, submission.title, link)
+    print("New notification from {0}. {1} \n{2}\n".format(
+        sub, submission.title, link))
 
 
 def send_email(id, title, link):
@@ -38,25 +88,10 @@ def has_paypal(title):
     return False
 
 
-def process_hardwareswap_submission(sub, submission, link):
-    """if a submission from hardwareswap has paypal/cash in [H],ignore it else,
-        send notificaiton
-    Arguments:
-        sub {} -- subreddit
-        submission {submission} -- submission
-        link {link} -- full link to submission
-    """
-    if has_paypal(submission.title):
-        print("Has Paypal/Cash, ignoring. {0}".format(submission.title))
-        print(str(link)+"\n")
-
-    else:
-        send_email(submission.id, submission.title, link)
-        print("New notification from {0}. {1} \n{2}\n".format(
-            sub, submission.title, link))
-
-
-def process_submission(sub, submission, link):
-    send_email(submission.id, submission.title, link)
-    print("New notification from {0}. {1} \n{2}\n".format(
-        sub, submission.title, link))
+def setup_reddit_api():
+    reddit = praw.Reddit(client_id=local_settings.client_id,
+                         client_secret=local_settings.client_secret,
+                         password=local_settings.password,
+                         username="decheverri123",
+                         user_agent="test script")
+    return reddit
