@@ -47,7 +47,8 @@ def process_hardwareswap_submission(sub, submission, link):
         link {link} -- full link to submission
     """
     if has_paypal(submission.title):
-        print("Has Paypal/Cash, ignoring. {0}\n".format(submission.title))
+        print("Has Paypal/Cash, ignoring. {0}".format(submission.title))
+        print(str(link)+"\n")
 
     else:
         send_email(submission.id, submission.title, link)

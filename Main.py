@@ -1,6 +1,5 @@
 # have all this run on the cloud
 
-import sys
 import time
 
 import praw
@@ -8,6 +7,7 @@ import praw
 import local_settings
 from helper_functions import (process_hardwareswap_submission,
                               process_submission)
+
 
 if __name__ == "__main__":
 
@@ -20,7 +20,6 @@ if __name__ == "__main__":
                          user_agent="test script")
 
     seen_posts = []
-    first = True
 
     def check_new_posts(sub):
         for submission in reddit.subreddit(sub).new(limit=1):
@@ -41,11 +40,6 @@ if __name__ == "__main__":
             for sub in subreddits:
                 check_new_posts(sub)
                 time.sleep(5)
-                first = False
-
-        except KeyboardInterrupt:
-            print('\n')
-            sys.exit(0)
 
         except Exception as e:
             print('Error:', e)
