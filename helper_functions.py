@@ -1,15 +1,14 @@
 import smtplib
 import ssl
+from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from datetime import datetime
 
 import praw
 
 import local_settings
 
-
-seen_posts = []
+seen_posts = local_settings.seen_posts
 
 
 def get_new_posts(sub):
@@ -69,7 +68,7 @@ def process_submission(sub, submission):
     link = "https://reddit.com{0}".format(submission.permalink)
 
     send_email(submission.id, submission.title, link)
-    
+
     time_created = unix_to_dt(submission.created_utc)
     print("{3} New notification from {0}. {1} \n{2}\n".format(
         sub, submission.title, link, time_created))
