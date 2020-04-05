@@ -2,6 +2,7 @@ import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from datetime import datetime
 
 import praw
 
@@ -17,12 +18,28 @@ def get_new_posts(sub):
     for submission in reddit.subreddit(sub).new(limit=1):
 
         if not seen_posts or submission.id not in seen_posts:
-            if sub == "hardwareswap":
-                process_hardwareswap_submission(sub, submission)
-                seen_posts.append(submission.id)
+            # if sub == "hardwareswap":
+            #     process_hardwareswap_submission(sub, submission)
+            #     seen_posts.append(submission.id)
 
-            else:
+            # else:
+            #     process_submission(sub, submission)
+            #     seen_posts.append(submission.id)
+            link = "https://reddit.com{0}".format(submission.permalink)
+
+            start = submission.title.find("[H]")
+            end = submission.title.find("[W]")
+            target = submission.title[start:end].lower()
+
+            if "switch" in target:
                 process_submission(sub, submission)
+                seen_posts.append(submission.id)
+            elif sub != "hardwareswap":
+                process_submission(sub, submission)
+                seen_posts.append(submission.id)
+            else:
+                print("Not Switch. {0}".format(submission.title))
+                print(str(link)+"\n")
                 seen_posts.append(submission.id)
 
 
@@ -52,8 +69,15 @@ def process_submission(sub, submission):
     link = "https://reddit.com{0}".format(submission.permalink)
 
     send_email(submission.id, submission.title, link)
-    print("New notification from {0}. {1} \n{2}\n".format(
-        sub, submission.title, link))
+    
+    time_created = unix_to_dt(submission.created_utc)
+    print("{3} New notification from {0}. {1} \n{2}\n".format(
+        sub, submission.title, link, time_created))
+
+
+def unix_to_dt(utc_time):
+    dt_time = datetime.fromtimestamp(utc_time)
+    return dt_time
 
 
 def send_email(id, title, link):

@@ -6,7 +6,8 @@ from helper_functions import get_new_posts
 
 if __name__ == "__main__":
 
-    subreddits = ["GameDeals", "buildapcsales", "hardwareswap", "consoledeals"]
+    subreddits = ["GameDeals", "buildapcsales",
+                  "hardwareswap", "consoledeals", "NintendoSwitchDeals"]
 
     while True:
         try:
