@@ -58,7 +58,7 @@ def process_hardwareswap_submission(sub, submission):
         print(str(link)+"\n")
 
     else:
-        send_email(submission.id, submission.title, link)
+        send_email(submission.title, link)
         print("New notification from {0}. {1} \n{2}\n".format(
             sub, submission.title, link))
 
@@ -67,7 +67,7 @@ def process_submission(sub, submission):
 
     link = "https://reddit.com{0}".format(submission.permalink)
 
-    send_email(submission.id, submission.title, link)
+    send_email(submission.title, link)
 
     time_created = unix_to_dt(submission.created_utc)
     print("{3} New notification from {0}. {1} \n{2}\n".format(
@@ -79,11 +79,9 @@ def unix_to_dt(utc_time):
     return dt_time
 
 
-def send_email(id, title, link):
-    port = 465
-    context = ssl.create_default_context()
+def setup_email(title, link):
 
-    sender_email = (local_settings.sender_email)
+    sender_email = local_settings.sender_email
     receiver_email = local_settings.receiver_email
 
     message = MIMEMultipart("alternative")
@@ -93,6 +91,15 @@ def send_email(id, title, link):
 
     part1 = MIMEText(link, "plain")
     message.attach(part1)
+
+    return sender_email, receiver_email, message
+
+
+def send_email(title, link):
+    sender_email, receiver_email, message = setup_email(title, link)
+
+    port = 465
+    context = ssl.create_default_context()
 
     with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
         server.login(local_settings.sender_email,
