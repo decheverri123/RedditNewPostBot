@@ -11,6 +11,15 @@ import local_settings
 seen_posts = local_settings.seen_posts
 
 
+def setup_reddit_api():
+    reddit = praw.Reddit(client_id=local_settings.client_id,
+                         client_secret=local_settings.client_secret,
+                         password=local_settings.password,
+                         username="decheverri123",
+                         user_agent="test script")
+    return reddit
+
+
 def get_new_posts(sub):
     reddit = setup_reddit_api()
 
@@ -18,11 +27,7 @@ def get_new_posts(sub):
 
         if not seen_posts or submission.id not in seen_posts:
 
-            start = submission.title.find("[H]")
-            end = submission.title.find("[W]")
-            target = submission.title[start:end].lower()
-
-            if "switch" in target:
+            if has_switch(submission.title):
                 process_submission(sub, submission)
                 seen_posts.append(submission.id)
 
@@ -79,46 +84,17 @@ def send_email(message):
         server.sendmail(sender_email, receiver_email, message.as_string())
 
 
-def has_paypal(title):
+def has_switch(title):
     start = title.find("[H]")
     end = title.find("[W]")
     target = title[start:end].lower()
 
-    if "paypal" in target or "cash" in target:
+    if "switch" in target:
         return True
 
     return False
 
 
-def setup_reddit_api():
-    reddit = praw.Reddit(client_id=local_settings.client_id,
-                         client_secret=local_settings.client_secret,
-                         password=local_settings.password,
-                         username="decheverri123",
-                         user_agent="test script")
-    return reddit
-
-
 def unix_to_dt(utc_time):
     dt_time = datetime.fromtimestamp(utc_time)
     return dt_time
-
-
-def process_hardwareswap_submission(sub, submission):
-    """ if a submission from hardwareswap has paypal/cash in [H],ignore it else,
-        send notificaiton
-    Arguments:
-        sub {} -- subreddit
-        submission {submission} -- submission
-        link {link} -- full link to submission
-    """
-    link = "https://reddit.com{0}".format(submission.permalink)
-
-    if has_paypal(submission.title):
-        print("Has Paypal/Cash, ignoring. {0}".format(submission.title))
-        print(str(link)+"\n")
-
-    else:
-        send_email(submission.title, link)
-        print("New notification from {0}. {1} \n{2}\n".format(
-            sub, submission.title, link))
