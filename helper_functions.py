@@ -27,11 +27,7 @@ def get_new_posts(sub):
 
         if not seen_posts or submission.id not in seen_posts:
 
-            if has_switch(submission.title):
-                process_submission(sub, submission)
-                seen_posts.append(submission.id)
-
-            elif sub != "hardwareswap":
+            if has_switch(submission.title) or sub != "hardwareswap":
                 process_submission(sub, submission)
                 seen_posts.append(submission.id)
 
@@ -57,6 +53,15 @@ def process_submission(sub, submission):
 
 
 def setup_email(title, link):
+    """Create message to be sent
+
+    Arguments:
+        title {str} -- title of submission
+        link {str} -- link of submission
+
+    Returns:
+        message -- message object that will be sent
+    """
     sender_email = local_settings.sender_email
     receiver_email = local_settings.receiver_email
 
@@ -72,6 +77,11 @@ def setup_email(title, link):
 
 
 def send_email(message):
+    """Initializes SMTP server and sends email message
+
+    Arguments:
+        message {MIME message} -- message to be sent
+    """
     port = 465
     context = ssl.create_default_context()
 
