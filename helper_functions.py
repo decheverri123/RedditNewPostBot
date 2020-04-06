@@ -9,6 +9,9 @@ import praw
 import local_settings
 
 seen_posts = local_settings.seen_posts
+sender_email = local_settings.sender_email
+receiver_email = local_settings.receiver_email
+email_password = local_settings.email_password
 
 
 def setup_reddit_api():
@@ -26,8 +29,7 @@ def get_new_posts(sub):
     for submission in reddit.subreddit(sub).new(limit=1):
 
         if not seen_posts or submission.id not in seen_posts:
-
-            if has_switch(submission.title) or sub != "hardwareswap":
+            if has_switch_or_2080(submission.title) or sub != "hardwareswap":
                 process_submission(sub, submission)
                 seen_posts.append(submission.id)
 
@@ -43,37 +45,32 @@ def get_new_posts(sub):
 def process_submission(sub, submission):
     link = "https://reddit.com{0}".format(submission.permalink)
 
-    message = setup_email(submission.title, link)
-    send_email(message)
+    email = create_email(submission.title, link)
+    send_email(email)
 
     time_created = unix_to_dt(submission.created_utc)
-
     print("{3} New notification from {0}. {1} \n{2}\n".format(
         sub, submission.title, link, time_created))
 
 
-def setup_email(title, link):
-    """Create message to be sent
+def create_email(title, link):
+    """Creates message to be sent
 
     Arguments:
         title {str} -- title of submission
         link {str} -- link of submission
 
     Returns:
-        message -- message object that will be sent
+        message -- email message that will be sent
     """
-    sender_email = local_settings.sender_email
-    receiver_email = local_settings.receiver_email
-
-    message = MIMEMultipart("alternative")
-    message["Subject"] = title
-    message["From"] = sender_email
-    message["To"] = receiver_email
-
+    email = MIMEMultipart("alternative")
+    email["Subject"] = title
+    email["From"] = sender_email
+    email["To"] = receiver_email
     part1 = MIMEText(link, "plain")
-    message.attach(part1)
+    email.attach(part1)
 
-    return message
+    return email
 
 
 def send_email(message):
@@ -86,15 +83,20 @@ def send_email(message):
     context = ssl.create_default_context()
 
     with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
-        sender_email = local_settings.sender_email
-        receiver_email = local_settings.receiver_email
-        email_password = local_settings.email_password
-
         server.login(sender_email, email_password)
         server.sendmail(sender_email, receiver_email, message.as_string())
 
 
-def has_switch(title):
+def has_switch_or_2080(title):
+    """checks to see if the title mentions certain words, in this case, switch
+    and 2080
+
+    Arguments:
+        title {str} -- submission title
+
+    Returns:
+        bool
+    """
     start = title.find("[H]")
     end = title.find("[W]")
     target = title[start:end].lower()
