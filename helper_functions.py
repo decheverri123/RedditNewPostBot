@@ -99,9 +99,8 @@ def has_switch(title):
     end = title.find("[W]")
     target = title[start:end].lower()
 
-    if "switch" in target:
+    if "switch" in target or "2080" in target:
         return True
-
     return False
 
 
