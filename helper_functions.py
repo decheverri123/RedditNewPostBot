@@ -29,12 +29,12 @@ def get_new_posts(sub):
     for submission in reddit.subreddit(sub).new(limit=1):
 
         if not seen_posts or submission.id not in seen_posts:
-            if has_switch_or_2080(submission.title) or sub != "hardwareswap":
+            if has_keyword(submission.title):
                 process_submission(sub, submission)
                 seen_posts.append(submission.id)
 
             else:
-                print("Not Switch. {0}".format(submission.title))
+                print("No keyword. {0}".format(submission.title))
 
                 link = "https://reddit.com{0}".format(submission.permalink)
                 print(str(link)+"\n")
@@ -87,7 +87,7 @@ def send_email(message):
         server.sendmail(sender_email, receiver_email, message.as_string())
 
 
-def has_switch_or_2080(title):
+def has_keyword(title):
     """checks to see if the title mentions certain words, in this case, switch
     and 2080
 
@@ -97,12 +97,15 @@ def has_switch_or_2080(title):
     Returns:
         bool
     """
-    start = title.find("[H]")
-    end = title.find("[W]")
-    target = title[start:end].lower()
+    # start = title.find("[H]")
+    # end = title.find("[W]")
+    # target = title[start:end].lower()
+    keywords = ["switch", "pc", "steam"]
+    lower_title = title.lower()
 
-    if "switch" in target or "2080" in target:
-        return True
+    for keyword in keywords:
+        if keyword in lower_title:
+            return True
     return False
 
 
