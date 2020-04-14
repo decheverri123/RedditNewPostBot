@@ -5,7 +5,7 @@ import time
 from helper_functions import get_new_posts
 
 subreddits = ["GameDeals", "buildapcsales",
-              "hardwareswap", "consoledeals", "NintendoSwitchDeals"]
+              "consoledeals", "NintendoSwitchDeals"]
 
 while True:
     try:

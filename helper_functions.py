@@ -100,11 +100,11 @@ def has_keyword(title):
     # start = title.find("[H]")
     # end = title.find("[W]")
     # target = title[start:end].lower()
-    keywords = ["switch", "pc", "steam"]
-    lower_title = title.lower()
+    keywords = ["switch", "pc", "steam", "eshop"]
+    lowercase_title = title.lower()
 
     for keyword in keywords:
-        if keyword in lower_title:
+        if keyword in lowercase_title:
             return True
     return False
 
